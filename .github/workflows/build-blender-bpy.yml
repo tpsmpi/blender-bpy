@@ -2,13 +2,18 @@ name: Build Blender Python Module
 
 on:
   workflow_dispatch:
+    inputs:
+      blender_version:
+        description: "Version"
+        required: true
+        default: "2.93.5"
 
 jobs:
   build_blender:
     name: Build Blender Python Module Job
     runs-on: ubuntu-20.04
     env:
-      BLENDER_VERSION: 2.93.5
+      BLENDER_VERSION: ${{ github.event.inputs.blender_version }}
     steps:
       - name: Info
         run: |
