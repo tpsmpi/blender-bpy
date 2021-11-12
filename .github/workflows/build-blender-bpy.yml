@@ -7,11 +7,15 @@ on:
         description: "Version"
         required: true
         default: "2.93.5"
+      runner:
+        description: "Runner"
+        required: true
+        default: "ubuntu-20.04"
 
 jobs:
   build_blender:
     name: Build Blender Python Module Job
-    runs-on: ubuntu-20.04
+    runs-on: ${{ github.event.inputs.runner }}
     env:
       BLENDER_VERSION: ${{ github.event.inputs.blender_version }}
     steps:
