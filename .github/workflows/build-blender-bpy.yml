@@ -53,12 +53,11 @@ jobs:
           svn checkout https://svn.blender.org/svnroot/bf-blender/tags/blender-$VERSION-release/lib/linux_centos7_x86_64
       - name: Build system preparation
         # Blender 2.93.5 needs gcc 9.3+ toolchain. Available by default in Ubuntu 20.04 runners but needs setup for Ubuntu 18.04.
+        if: ${{ github.event.inputs.runner == 'ubuntu-18.04' }}
         run: |
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            echo Use gcc 9 toolchain
-            echo "CC=gcc-9" >> $GITHUB_ENV        
-            echo "CXX=g++-9" >> $GITHUB_ENV
-          fi                    
+          echo Use gcc 9 toolchain
+          echo "CC=gcc-9" >> $GITHUB_ENV        
+          echo "CXX=g++-9" >> $GITHUB_ENV
       - name: Build Blender bpy.so
         run: |
           cd blender-build/blender
