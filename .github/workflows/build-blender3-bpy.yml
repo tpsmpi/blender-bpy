@@ -1,4 +1,4 @@
-name: Build Blender Python Module
+name: Build Blender 3 Python Module
 
 on:
   workflow_dispatch:
