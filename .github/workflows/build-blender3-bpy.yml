@@ -45,7 +45,8 @@ jobs:
           path: blender-build/blender
           ref: "blender-v${{ env.BLENDER_VERSION }}-release"
           submodules: recursive
-      - run: |
+      - name: Store code SHA
+        run: |
           cd blender-build/blender
           echo "BLENDER_CODE_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
           echo Using Blender code version $BLENDER_CODE_SHA
