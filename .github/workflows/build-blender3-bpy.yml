@@ -77,6 +77,6 @@ jobs:
       - name: Upload artifact 
         uses: actions/upload-artifact@v2
         with:
-          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}-${{ BLENDER_CODE_SHA }}
+          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}-${{ env.BLENDER_CODE_SHA }}
           path: "release"
           
