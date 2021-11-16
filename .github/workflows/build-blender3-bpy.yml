@@ -43,13 +43,17 @@ jobs:
         with:
           repository: "blender/blender"
           path: blender-build/blender
-          ref: "blender-v{{ env.BLENDER_VERSION }}-release"
+          ref: "blender-v${{ env.BLENDER_VERSION }}-release"
           submodules: recursive
+      - run: |
+          cd blender-build/blender
+          echo "BLENDER_CODE_SHA=`git rev-parse --short HEAD`" >> $GITHUB_ENV
+          echo Using Blender code version $BLENDER_CODE_SHA
       - name: Checkout precompiled library dependencies
         run: |
           mkdir blender-build/lib
           cd blender-build/lib
-          svn checkout https://svn.blender.org/svnroot/bf-blender/tags/blender-{{ env.BLENDER_VERSION }}-release/lib/linux_centos7_x86_64
+          svn checkout https://svn.blender.org/svnroot/bf-blender/tags/blender-${{ env.BLENDER_VERSION }}-release/lib/linux_centos7_x86_64
       - name: Build system preparation
         # Blender 2.93.5 needs gcc 9.3+ toolchain. Available by default in Ubuntu 20.04 runners but needs setup for Ubuntu 18.04.
         if: ${{ github.event.inputs.runner == 'ubuntu-18.04' }}
@@ -73,6 +77,6 @@ jobs:
       - name: Upload artifact 
         uses: actions/upload-artifact@v2
         with:
-          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}
+          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}-${{ BLENDER_CODE_SHA }}
           path: "release"
           
