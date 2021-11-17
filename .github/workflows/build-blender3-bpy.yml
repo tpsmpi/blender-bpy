@@ -47,6 +47,7 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '11.4.0'
+          linux-local-args: '["--toolkit"]'
       - name: Enable CUDA build option
         if: ${{ github.event.inputs.cuda == 'yes' }}
         run: |
