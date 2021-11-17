@@ -7,11 +7,14 @@ on:
         description: "Version"
         required: true
         default: "3.0"
+      cuda:
+        description: "CUDA"
+        required: true
+        default: "yes"
       runner:
         description: "Runner"
         required: true
         default: "ubuntu-20.04"
-
 jobs:
   build_blender:
     name: Build Blender Python Module Job
@@ -38,6 +41,17 @@ jobs:
               libxinerama-dev \
               libglew-dev \
               python3
+      - name: Install CUDA toolkit 11.4.0
+        if: ${{ github.event.inputs.cuda == 'yes' }}
+        uses: Jimver/cuda-toolkit@v0.2.4
+        id: cuda-toolkit
+        with:
+          cuda: '11.4.0'
+      - name: Enable CUDA build option
+        if: ${{ github.event.inputs.cuda == 'yes' }}
+        run: |
+          BUILD_CMAKE_ARGS="BUILD_CMAKE_ARGS=\"-D WITH_CYCLES_CUDA_BINARIES=ON\""
+          echo "BUILD_CMAKE_ARGS=$BUILD_CMAKE_ARGS" >> $GITHUB_ENV          
       - name: Checkout Blender sources from GitHub
         uses: actions/checkout@v2
         with:
@@ -66,7 +80,7 @@ jobs:
       - name: Build Blender bpy.so
         run: |
           cd blender-build/blender
-          make bpy
+          make bpy ${{ env.BUILD_CMAKE_ARGS }}
       - name: Compress compiled Blender build
         run: |
           VERSION=$BLENDER_VERSION
