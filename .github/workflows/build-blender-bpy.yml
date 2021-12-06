@@ -6,7 +6,11 @@ on:
       blender_version:
         description: "Version"
         required: true
-        default: "2.93.5"
+        default: "3.0.0"
+      cuda:
+        description: "CUDA"
+        required: true
+        default: "yes"
       runner:
         description: "Runner"
         required: true
@@ -38,6 +42,18 @@ jobs:
               libxinerama-dev \
               libglew-dev \
               python3
+      - name: Install CUDA toolkit 11.4.0
+        if: ${{ github.event.inputs.cuda == 'yes' }}
+        uses: Jimver/cuda-toolkit@v0.2.4
+        id: cuda-toolkit
+        with:
+          cuda: '11.4.0'
+          linux-local-args: '["--toolkit"]'
+      - name: Enable CUDA build option
+        if: ${{ github.event.inputs.cuda == 'yes' }}
+        run: |
+          BUILD_CMAKE_ARGS="BUILD_CMAKE_ARGS=\"-D WITH_CYCLES_CUDA_BINARIES=ON\""
+          echo "BUILD_CMAKE_ARGS=$BUILD_CMAKE_ARGS" >> $GITHUB_ENV          
       - name: Checkout Blender sources from GitHub
         uses: actions/checkout@v2
         with:
@@ -45,6 +61,12 @@ jobs:
           path: blender-build/blender
           ref: "v${{ env.BLENDER_VERSION }}"
           submodules: recursive
+      - name: Store code SHA
+        run: |
+          cd blender-build/blender
+          BLENDER_CODE_SHA=`git rev-parse --short HEAD`
+          echo Using Blender code version $BLENDER_CODE_SHA
+          echo "BLENDER_CODE_SHA=$BLENDER_CODE_SHA" >> $GITHUB_ENV
       - name: Checkout precompiled library dependencies
         run: |
           VERSION=${BLENDER_VERSION%.*}
@@ -61,7 +83,7 @@ jobs:
       - name: Build Blender bpy.so
         run: |
           cd blender-build/blender
-          make bpy
+          make bpy ${{ env.BUILD_CMAKE_ARGS }}
       - name: Compress compiled Blender build
         run: |
           VERSION=${BLENDER_VERSION%.*}
@@ -74,6 +96,5 @@ jobs:
       - name: Upload artifact 
         uses: actions/upload-artifact@v2
         with:
-          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}
+          name: blender-bpy-${{ env.BLENDER_VERSION }}-${{ github.event.inputs.runner }}-${{ env.BLENDER_CODE_SHA }}
           path: "release"
-          
