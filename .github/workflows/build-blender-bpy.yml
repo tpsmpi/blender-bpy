@@ -7,6 +7,10 @@ on:
         description: "Version"
         required: true
         default: "3.0.0"
+      python_version:
+        description: "Python"
+        required: true
+        default: "3.9"
       cuda:
         description: "CUDA"
         required: true
@@ -88,7 +92,7 @@ jobs:
         run: |
           VERSION=${BLENDER_VERSION%.*}
           mkdir release
-          tar Jcf release/blender-bpy-$BLENDER_VERSION-${{ github.event.inputs.runner }}.tar.xz -C blender-build/lib/linux_centos7_x86_64/python/lib/python3.9/site-packages/ bpy.so $VERSION/
+          tar Jcf release/blender-bpy-$BLENDER_VERSION-${{ github.event.inputs.runner }}.tar.xz -C blender-build/lib/linux_centos7_x86_64/python/lib/python${{ github.event.inputs.python_version }}/site-packages/ bpy.so $VERSION/
       - name: Create MD5 checksum file
         run: |
           cd release
