@@ -6,11 +6,11 @@ on:
       blender_version:
         description: "Version"
         required: true
-        default: "3.0.0"
+        default: "3.3.0"
       python_version:
         description: "Python"
         required: true
-        default: "3.9"
+        default: "3.10"
       cuda:
         description: "CUDA"
         required: true
